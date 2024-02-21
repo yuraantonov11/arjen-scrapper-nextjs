@@ -6,8 +6,10 @@ import {ObjectMap} from "csv-writer/src/lib/lang/object";
 
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
+const {ARJEN_EMAIL, ARJEN_PASSWORD, SKIP_LOGIN} = process.env;
+
 interface IProduct {
-    productId: string;
+    id: string;
     code: string;
     title: string;
     category: string;
@@ -61,7 +63,7 @@ interface ProductXML {
 
 
 interface IProductData {
-    productId: string;
+    id: string;
     code: string;
     title: string;
     category: string;
@@ -80,7 +82,7 @@ interface IProductData {
     size: string;
 }
 class Product {
-    productId: string;
+    id: string;
     code: string;
     title: string;
     category: string;
@@ -98,7 +100,7 @@ class Product {
     size?: string;
 
     constructor({
-                    productId,
+                    id,
                     code,
                     title,
                     category,
@@ -115,7 +117,7 @@ class Product {
                     inventory,
                     size,
                 }: IProductData) {
-        this.productId =  productId;
+        this.id =  id;
         this.code = code;
         this.title =  title;
         this.category =  category;
@@ -256,7 +258,7 @@ class ProductDetailsScraper {
                         // description: isFirstIteration ? productData.description : '',
 
                     products.push(new Product({
-                        productId: id,
+                        id,
                         title,
                         code,
                         category,
@@ -394,7 +396,7 @@ class ProductCatalog {
         await page.goto(this.baseUrl);
         const productScraper = new ProductDetailsScraper(page);
 
-        // await productScraper.login(process.env.ARJEN_EMAIL, process.env.ARJEN_PASSWORD);
+        if(!SKIP_LOGIN) await productScraper.login(ARJEN_EMAIL, ARJEN_PASSWORD);
 
         let currentPage = 1;
         await page.goto(`${this.catalogUrl}`);
@@ -405,6 +407,8 @@ class ProductCatalog {
         await this.fetchAndParseXML();
 
         let totalPages = lastPageNumber;
+        // TODO: Implement short scrapping
+        // let totalPages = 2;
 
         let processedPages = 0;
 
@@ -438,7 +442,7 @@ class ProductCatalog {
             try {
                 const products: IProduct[] = await productScraper.extractProductData(link);
                 if (products.length) {
-                    allProducts.concat(products);
+                    allProducts = allProducts.concat(products);
                 }
             } catch (err) {
                 console.warn(`Помилка при обробці посилання ${link}:`, err);
@@ -460,11 +464,11 @@ class ProductCatalog {
 const baseUrl = 'https://arjen.com.ua/';
 const catalogUrl = `${baseUrl}katalog/`;
 const xml_path = `${baseUrl}prices/xml.php/`;
-const allProducts: IProduct[] = [];
+let allProducts: IProduct[] = [];
 
 
 const csvConfig = {
-    path: 'arjen_output.csv',
+    path: 'static/arjen_output.csv',
     header: [
         {id: 'id', title: 'ID'},
         {id: 'code', title: 'Code'},

@@ -1,7 +1,24 @@
 import {useEffect, useState} from 'react';
-import LinearProgress from '@mui/joy/LinearProgress';
-import Typography from '@mui/joy/Typography';
-import Button from '@mui/joy/Button';
+import Button from '@mui/material/Button';
+import LinearProgress, { LinearProgressProps } from '@mui/material/LinearProgress';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+
+
+function LinearProgressWithLabel(props: LinearProgressProps & { value: number }) {
+    return (
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Box sx={{ width: '100%', mr: 1 }}>
+        <LinearProgress variant="buffer"  {...props} />
+      </Box>
+      <Box sx={{ minWidth: 35 }}>
+        <Typography variant="body2" color="text.secondary">{`${Math.round(
+            props.value,
+        )}%`}</Typography>
+      </Box>
+    </Box>
+    );
+}
 
 const ScriptRunner = () => {
     const [progress, setProgress] = useState(0);
@@ -72,29 +89,7 @@ const ScriptRunner = () => {
     };
     return (
         <div>
-          {!isRunning || <LinearProgress
-              determinate
-              variant="outlined"
-              color="neutral"
-              size="sm"
-              thickness={32}
-              value={progress}
-              sx={{
-                  '--LinearProgress-radius': '0px',
-                  '--LinearProgress-progressThickness': '24px',
-                  boxShadow: 'sm',
-                  borderColor: 'neutral.500',
-              }}
-          >
-            <Typography
-                level="body-xs"
-                fontWeight="xl"
-                textColor="common.white"
-                sx={{ mixBlendMode: 'difference' }}
-            >
-              LOADING… {`${Math.round(progress)}%`}
-            </Typography>
-          </LinearProgress>}
+          {!isRunning || <LinearProgressWithLabel value={progress} valueBuffer={progress}/>}
             <div>
         <Button
             variant="outlined"
