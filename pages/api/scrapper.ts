@@ -1,6 +1,8 @@
 import puppeteer, {Browser, Page} from 'puppeteer';
 import xml2js from 'xml2js';
 import axios from 'axios';
+import {CsvWriter} from "csv-writer/src/lib/csv-writer";
+import {ObjectMap} from "csv-writer/src/lib/lang/object";
 
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
@@ -317,7 +319,7 @@ class ProductCatalog {
         baseUrl: string,
         catalogUrl: string,
         xmlPath: string,
-        writer: any,
+        writer: CsvWriter<ObjectMap<string>>,
         // productData: Product | null = null
     ) {
         this.baseUrl = baseUrl;
@@ -460,7 +462,8 @@ const catalogUrl = `${baseUrl}katalog/`;
 const xml_path = `${baseUrl}prices/xml.php/`;
 const allProducts: IProduct[] = [];
 
-const csvWriter = createCsvWriter({
+
+const csvConfig = {
     path: 'arjen_output.csv',
     header: [
         {id: 'id', title: 'ID'},
@@ -480,7 +483,9 @@ const csvWriter = createCsvWriter({
         {id: 'availability', title: 'availability'},
         {id: 'inventory', title: 'inventory'},
     ],
-});
+};
+
+const csvWriter: CsvWriter<ObjectMap<string>> = createCsvWriter(csvConfig);
 
 
 const productCatalogScraper = new ProductCatalog(baseUrl, catalogUrl, xml_path, csvWriter);
