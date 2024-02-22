@@ -2,11 +2,20 @@ import Head from 'next/head';
 import Layout, {siteTitle} from '../components/layout';
 import utilStyles from '../styles/utils.module.css';
 import {getSortedCsvData} from '../lib/csv';
-import {DataGrid, GridRowsProp, GridColDef, GridValidRowModel} from '@mui/x-data-grid';
+import {DataGrid, GridColDef, GridRowsProp, GridValidRowModel} from '@mui/x-data-grid';
 import ScriptRunner from "../components/ScriptRunner";
+import {useEffect, useState} from "react";
+import {CircularProgress} from "@mui/material";
 
-export default function Home(props: {data: GridRowsProp, columns: GridColDef<GridValidRowModel>[]}) {
-    const { data, columns } = props;
+export default function Home(props: { data: GridRowsProp, columns: GridColDef<GridValidRowModel>[] }) {
+    const {data, columns} = props;
+    const [loading, setLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        if (data.length > 0) {
+            setLoading(false);
+        }
+    }, [data]);
 
     return (
         <Layout home>
@@ -14,13 +23,24 @@ export default function Home(props: {data: GridRowsProp, columns: GridColDef<Gri
         <title>{siteTitle}</title>
       </Head>
       <section className={utilStyles.headingMd}>
-        <ScriptRunner />
+        <ScriptRunner/>
         <div>
-          {data.length && <DataGrid
-              rows={data}
-              getRowId={({ID}) => ID}
-              columns={columns}
-          />}
+          {loading ? (
+              <div style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: '50vh'
+              }}>
+              <CircularProgress/>
+            </div>
+          ) : (
+              data.length > 0 && <DataGrid
+                  rows={data}
+                  getRowId={({ID}) => ID}
+                  columns={columns}
+              />
+          )}
         </div>
       </section>
     </Layout>
@@ -38,6 +58,7 @@ export async function getStaticProps() {
             },
         };
     } catch (error) {
+        console.error(error);
         return {
             props: {
                 data: [],
