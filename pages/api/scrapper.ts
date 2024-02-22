@@ -1,4 +1,4 @@
-import puppeteer, {Browser, Page} from 'puppeteer';
+import puppeteer, {Browser, Page} from 'puppeteer-core';
 import xml2js from 'xml2js';
 import axios from 'axios';
 import {CsvWriter} from "csv-writer/src/lib/csv-writer";
