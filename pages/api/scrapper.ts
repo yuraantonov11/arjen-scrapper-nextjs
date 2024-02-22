@@ -468,7 +468,7 @@ let allProducts: IProduct[] = [];
 
 
 const csvConfig = {
-    path: 'static/arjen_output.csv',
+    path: 'static/output.csv',
     header: [
         {id: 'id', title: 'ID'},
         {id: 'code', title: 'Code'},
