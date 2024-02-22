@@ -28,7 +28,6 @@ export default function Home({data, columns}: {data: GridRowsProp, columns: Grid
 export async function getStaticProps() {
   const {data, columns} = await getSortedCsvData();
 
-
   return {
     props: {
       data,
