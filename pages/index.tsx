@@ -5,17 +5,22 @@ import {getSortedCsvData} from '../lib/csv';
 import {DataGrid, GridColDef, GridRowsProp, GridValidRowModel} from '@mui/x-data-grid';
 import ScriptRunner from "../components/ScriptRunner";
 import {useEffect, useState} from "react";
-import {CircularProgress} from "@mui/material";
+import {Alert, CircularProgress} from "@mui/material";
 
-export default function Home(props: { data: GridRowsProp, columns: GridColDef<GridValidRowModel>[] }) {
-    const {data, columns} = props;
+interface IProps {
+    data: GridRowsProp;
+    columns: GridColDef<GridValidRowModel>[];
+    error?: string;
+}
+export default function Home(props: IProps) {
+    const {data, columns, error} = props;
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        if (data.length > 0) {
+        if (error || data.length > 0) {
             setLoading(false);
         }
-    }, [data]);
+    }, [data, error]);
 
     return (
         <Layout home>
@@ -35,11 +40,11 @@ export default function Home(props: { data: GridRowsProp, columns: GridColDef<Gr
               <CircularProgress/>
             </div>
           ) : (
-              data.length > 0 && <DataGrid
+              data.length > 0 ? <DataGrid
                   rows={data}
                   getRowId={({ID}) => ID}
                   columns={columns}
-              />
+              /> : <Alert severity="error">{error}</Alert>
           )}
         </div>
       </section>
@@ -57,13 +62,13 @@ export async function getStaticProps() {
                 columns,
             },
         };
-    } catch (error) {
-        console.error(error);
+    } catch ({code, path, message}) {
+        const error = (code === 'ENOENT') ? `Error: ${path} file not found` : message ;
         return {
             props: {
                 data: [],
                 columns: [],
-                error: error.message,
+                error,
             },
         };
     }
