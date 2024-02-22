@@ -389,7 +389,10 @@ class ProductCatalog {
 
     async startScraper(): Promise<void> {
         this.isRunning = true;
-        this._browser = await puppeteer.launch({headless: true});
+        this._browser = await puppeteer.launch({
+            headless: true,
+            channel: 'chrome'
+        });
         const [page] = await this._browser.pages();
         await page.setViewport({width: 1280, height: 480, deviceScaleFactor: 1});
 
@@ -452,7 +455,7 @@ class ProductCatalog {
 
     async stopScraper(): Promise<void> {
         this.isRunning = false;
-        await this._browser.close();
+        await this._browser?.close();
     }
 
     get progress(): number {
