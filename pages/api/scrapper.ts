@@ -1,7 +1,6 @@
 import puppeteer, {Browser, Page} from 'puppeteer-core';
 import xml2js from 'xml2js';
 import axios from 'axios';
-import chromium from "@sparticuz/chromium";
 import {CsvWriter} from "csv-writer/src/lib/csv-writer";
 import {ObjectMap} from "csv-writer/src/lib/lang/object";
 
@@ -389,19 +388,10 @@ class ProductCatalog {
     }
 
     async startScraper(): Promise<void> {
-        chromium.setHeadlessMode = true;
-        chromium.setGraphicsMode = false;
-
         this.isRunning = true;
         this._browser = await puppeteer.launch({
-            args: [
-                ...chromium.args,
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-            ],
-            defaultViewport: chromium.defaultViewport,
-            executablePath: await chromium.executablePath(),
             headless: true,
+            channel: 'chrome'
         });
         const [page] = await this._browser.pages();
         await page.setViewport({width: 1280, height: 480, deviceScaleFactor: 1});
