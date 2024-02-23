@@ -401,7 +401,7 @@ class ProductCatalog {
             ],
             defaultViewport: chromium.defaultViewport,
             executablePath: await chromium.executablePath(),
-            headless: chromium.headless,
+            headless: true,
         });
         const [page] = await this._browser.pages();
         await page.setViewport({width: 1280, height: 480, deviceScaleFactor: 1});
