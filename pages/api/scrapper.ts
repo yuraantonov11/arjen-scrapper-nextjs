@@ -6,7 +6,12 @@ import {ObjectMap} from "csv-writer/src/lib/lang/object";
 
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
-const {ARJEN_EMAIL, ARJEN_PASSWORD, SKIP_LOGIN} = process.env;
+const {
+    ARJEN_EMAIL,
+    ARJEN_PASSWORD,
+    SKIP_LOGIN,
+    PUPPETEER_EXECUTABLE_PATH
+} = process.env;
 
 interface IProduct {
     id: string;
@@ -391,7 +396,11 @@ class ProductCatalog {
         this.isRunning = true;
         this._browser = await puppeteer.launch({
             headless: true,
-            channel: 'chrome'
+            executablePath: PUPPETEER_EXECUTABLE_PATH,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox'
+            ],
         });
         const [page] = await this._browser.pages();
         await page.setViewport({width: 1280, height: 480, deviceScaleFactor: 1});
